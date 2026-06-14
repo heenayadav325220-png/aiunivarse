@@ -1,0 +1,11 @@
+{
+  "name": "AI Universe",
+  "description": "A premium, futuristic All-in-One AI Tools App featuring rich AI chats, text/image/video generation, a voice assistant, solved-by-photo features, custom notes, code compilation, and PDF explainers with high-performance CSS animations.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

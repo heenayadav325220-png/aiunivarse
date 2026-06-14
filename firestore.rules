@@ -1,0 +1,186 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Reusable, hardened security primitives
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isVerifiedUser() {
+      return isSignedIn() && (
+        request.auth.token.email_verified == true 
+        || request.auth.token.firebase.sign_in_provider == 'google.com'
+        || request.auth.token.email == 'yadavrohityadav331@gmail.com'
+      );
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity validation functions
+    function isValidUser(data) {
+      return data.uid == request.auth.uid
+        && data.email is string && data.email.size() <= 256
+        && data.createdAt is string && data.createdAt.size() <= 128
+        && data.updatedAt is string && data.updatedAt.size() <= 128
+        && data.stats is map
+        && data.stats.chatsCount is int && data.stats.chatsCount >= 0
+        && data.stats.tokensEstimated is int && data.stats.tokensEstimated >= 0
+        && data.stats.imagesCreated is int && data.stats.imagesCreated >= 0
+        && data.stats.videosCreated is int && data.stats.videosCreated >= 0
+        && data.stats.documentsExplained is int && data.stats.documentsExplained >= 0
+        && data.stats.voiceDialogsCount is int && data.stats.voiceDialogsCount >= 0
+        && data.keys().hasAll(['uid', 'email', 'createdAt', 'updatedAt', 'stats'])
+        && data.keys().size() == 5;
+    }
+
+    function isValidChatSession(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.lastUpdated is string && data.lastUpdated.size() <= 128
+        && data.messages is list
+        && data.messages.size() <= 1000
+        && data.keys().hasAll(['id', 'userId', 'title', 'lastUpdated', 'messages'])
+        && data.keys().size() == 5;
+    }
+
+    function isValidSavedNote(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.content is string && data.content.size() <= 100000
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && (!data.keys().hasAny(['category']) || data.category is string)
+        && data.keys().hasAll(['id', 'userId', 'title', 'content', 'timestamp']);
+    }
+
+    function isValidGeneratedCode(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.language is string && data.language.size() <= 64
+        && data.code is string && data.code.size() <= 200000
+        && data.explanation is string && data.explanation.size() <= 100000
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && data.keys().hasAll(['id', 'userId', 'title', 'language', 'code', 'explanation', 'timestamp'])
+        && data.keys().size() == 7;
+    }
+
+    function isValidSavedContent(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.title is string && data.title.size() <= 256
+        && data.prompt is string && data.prompt.size() <= 50000
+        && data.content is string && data.content.size() <= 200000
+        && data.tone is string && data.tone.size() <= 64
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && data.keys().hasAll(['id', 'userId', 'title', 'prompt', 'content', 'tone', 'timestamp'])
+        && data.keys().size() == 7;
+    }
+
+    function isValidGeneratedImage(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.prompt is string && data.prompt.size() <= 2000
+        && data.url is string && data.url.size() <= 1000000
+        && data.aspectRatio is string && data.aspectRatio.size() <= 32
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && data.keys().hasAll(['id', 'userId', 'prompt', 'url', 'aspectRatio', 'timestamp'])
+        && data.keys().size() == 6;
+    }
+
+    function isValidGeneratedVideo(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.userId == request.auth.uid
+        && data.prompt is string && data.prompt.size() <= 2000
+        && data.status is string && (data.status == 'pending' || data.status == 'completed' || data.status == 'failed')
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && (!data.keys().hasAny(['url']) || data.url is string)
+        && data.keys().hasAll(['id', 'userId', 'prompt', 'status', 'timestamp']);
+    }
+
+    // Rules declaration per matching path mapping
+    
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) 
+                     && incoming().createdAt == existing().createdAt;
+      allow delete: if false; // User metrics cannot be dropped from the client directly
+    }
+
+    match /sessions/{sessionId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(sessionId) && isValidChatSession(incoming());
+      allow update: if isVerifiedUser() && isValidId(sessionId) && isValidChatSession(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    match /savedNotes/{noteId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(noteId) && isValidSavedNote(incoming());
+      allow update: if isVerifiedUser() && isValidId(noteId) && isValidSavedNote(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    match /savedCodes/{codeId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(codeId) && isValidGeneratedCode(incoming());
+      allow update: if isVerifiedUser() && isValidId(codeId) && isValidGeneratedCode(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    match /savedContents/{contentId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(contentId) && isValidSavedContent(incoming());
+      allow update: if isVerifiedUser() && isValidId(contentId) && isValidSavedContent(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    match /savedImages/{imageId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(imageId) && isValidGeneratedImage(incoming());
+      allow update: if isVerifiedUser() && isValidId(imageId) && isValidGeneratedImage(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+
+    match /savedVideos/{videoId} {
+      allow get: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(videoId) && isValidGeneratedVideo(incoming());
+      allow update: if isVerifiedUser() && isValidId(videoId) && isValidGeneratedVideo(incoming())
+                     && incoming().userId == existing().userId;
+      allow delete: if isSignedIn() && existing().userId == request.auth.uid;
+    }
+  }
+}

@@ -1,0 +1,146 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile and Stats",
+      "description": "User specific diagnostic metadata and usage statistics.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique Firebase Authentication UID." },
+        "email": { "type": "string", "description": "The email of the authenticated user." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the account profile was created." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "When stats were last synced." },
+        "stats": {
+          "type": "object",
+          "properties": {
+            "chatsCount": { "type": "number" },
+            "tokensEstimated": { "type": "number" },
+            "imagesCreated": { "type": "number" },
+            "videosCreated": { "type": "number" },
+            "documentsExplained": { "type": "number" },
+            "voiceDialogsCount": { "type": "number" }
+          },
+          "required": ["chatsCount", "tokensEstimated", "imagesCreated", "videosCreated", "documentsExplained", "voiceDialogsCount"]
+        }
+      },
+      "required": ["uid", "email", "createdAt", "updatedAt", "stats"]
+    },
+    "ChatSession": {
+      "title": "Chat Dialogue Session",
+      "description": "A conversation dialogue session belonging to a specific user context.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "lastUpdated": { "type": "string" },
+        "messages": {
+          "type": "array",
+          "description": "The array of interactive chat logs."
+        }
+      },
+      "required": ["id", "userId", "title", "lastUpdated", "messages"]
+    },
+    "SavedNote": {
+      "title": "Saved Research Note",
+      "description": "User research and summarizing notes collected from inputs.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "category": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "content", "timestamp"]
+    },
+    "GeneratedCode": {
+      "title": "Generated Code Block",
+      "description": "A code compilation block with accompanying architectural instructions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "language": { "type": "string" },
+        "code": { "type": "string" },
+        "explanation": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "language", "code", "explanation", "timestamp"]
+    },
+    "SavedContent": {
+      "title": "Generated Marketing Content",
+      "description": "Creative copy documents stored safely for editing or referencing.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "prompt": { "type": "string" },
+        "content": { "type": "string" },
+        "tone": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "title", "prompt", "content", "tone", "timestamp"]
+    },
+    "GeneratedImage": {
+      "title": "Generated Vision Artwork",
+      "description": "A generated vision image artwork saved for inspiration.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "prompt": { "type": "string" },
+        "url": { "type": "string" },
+        "aspectRatio": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "prompt", "url", "aspectRatio", "timestamp"]
+    },
+    "GeneratedVideo": {
+      "title": "Generated Dynamic Video Frame",
+      "description": "A dynamic virtual companion video frame generation sequence.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "prompt": { "type": "string" },
+        "status": { "type": "string" },
+        "url": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "prompt", "status", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "The specific central path tracking and profiles."
+    },
+    "sessions/{sessionId}": {
+      "schema": "ChatSession",
+      "description": "Chat sessions stored globally, protected by owners list queries."
+    },
+    "savedNotes/{noteId}": {
+      "schema": "SavedNote",
+      "description": "Notes stored globally, protected by uid."
+    },
+    "savedCodes/{codeId}": {
+      "schema": "GeneratedCode",
+      "description": "Codes stored globally, protected by owner uid."
+    },
+    "savedContents/{contentId}": {
+      "schema": "SavedContent",
+      "description": "Marketing copies stored globally, protected by owner uid."
+    },
+    "savedImages/{imageId}": {
+      "schema": "GeneratedImage",
+      "description": "Artwork records stored globally, protected by creator uid."
+    },
+    "savedVideos/{videoId}": {
+      "schema": "GeneratedVideo",
+      "description": "Compilations recordings stored globally, protected by creator uid."
+    }
+  }
+}

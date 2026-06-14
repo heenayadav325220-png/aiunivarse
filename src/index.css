@@ -1,0 +1,332 @@
+@import "tailwindcss";
+
+/* Astro/Cosmic Float Animation - Hardware-Accelerated 3D Transform */
+@keyframes cosmicFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.9);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate3d(10px, -15px, 0) scale(1.1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(-8px, 12px, 0) scale(0.8);
+    opacity: 0.4;
+  }
+}
+
+/* GPU-backed equalizer pulse */
+@keyframes eq-pulse {
+  0%, 100% {
+    transform: scaleY(0.2);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Linear GPU Shimmer Animation */
+@keyframes shimmer-slide {
+  0% {
+    transform: translate3d(-150%, 0, 0) skewX(-15deg);
+  }
+  100% {
+    transform: translate3d(150%, 0, 0) skewX(-15deg);
+  }
+}
+
+/* Custom classes for cosmic styling */
+.glass-panel {
+  background: rgba(13, 8, 32, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-panel-heavy {
+  background: rgba(8, 4, 22, 0.97);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.neon-border-blue {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+}
+
+.neon-border-purple {
+  border-color: rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.15);
+}
+
+.neon-text-blue {
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+}
+
+.neon-text-purple {
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+
+/* Smooth customized Webkit scrollbar for premium app styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.3);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.6);
+}
+
+/* Active touch highlights */
+.active-nav-glow {
+  box-shadow: 0 -4px 16px rgba(168, 85, 247, 0.4);
+}
+
+/* Prevent text overflow on custom buttons */
+button, input, textarea {
+  outline: none !important;
+}
+
+/* Dynamic glow button styles */
+.gradient-btn-cyan-purple {
+  background: linear-gradient(135deg, #06b6d4 0%, #a855f7 100%);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.gradient-btn-cyan-purple::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #22d3ee 0%, #c084fc 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gradient-btn-cyan-purple:hover::before {
+  opacity: 1;
+}
+
+.gradient-btn-cyan-purple * {
+  position: relative;
+  z-index: 10;
+}
+
+/* ==========================================
+   PRISTINE HIGH-CONTRAST LIGHT THEME SYSTEM
+   ========================================== */
+.light-theme {
+  background-color: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+/* Faint background gradients in Light Theme */
+.light-theme .fixed.inset-0.bg-\[\#060012\] {
+  background: radial-gradient(circle at 50% 50%, #f1f5f9 0%, #e2e8f0 100%) !important;
+}
+.light-theme .fixed.inset-0 .rounded-full {
+  opacity: 0.12 !important;
+  mix-blend-mode: multiply;
+}
+
+/* Override panels to soft shadows & clean white borders */
+.light-theme .glass-panel {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 14px rgba(148, 163, 184, 0.08) !important;
+}
+
+.light-theme .glass-panel-heavy {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.3) !important;
+  color: #1e293b !important;
+  box-shadow: 0 10px 25px rgba(148, 163, 184, 0.12) !important;
+}
+
+/* Light Navigation protocol overrides */
+.light-theme nav {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-top: 1px solid rgba(148, 163, 184, 0.2) !important;
+  box-shadow: 0 -8px 30px rgba(148, 163, 184, 0.12) !important;
+}
+
+.light-theme nav button {
+  color: #64748b !important;
+}
+
+.light-theme nav button .text-cyan-400 {
+  color: #4f46e5 !important; /* Premium Royal Iris Blue/Purple */
+}
+
+.light-theme nav button .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+/* Specific navigation link indicator */
+.light-theme .active-nav-glow {
+  background: linear-gradient(to right, #4f46e5, #9333ea) !important;
+  box-shadow: 0 -2px 10px rgba(79, 70, 229, 0.35) !important;
+}
+
+/* Typography, Headers and Subtext */
+.light-theme h2,
+.light-theme h3 {
+  color: #0f172a !important;
+  background-image: none !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+}
+
+.light-theme h4 {
+  color: #1e293b !important;
+}
+
+.light-theme p {
+  color: #334155 !important;
+}
+
+.light-theme span {
+  color: inherit;
+}
+
+.light-theme .text-white {
+  color: #0f172a !important;
+}
+
+.light-theme .text-slate-100 {
+  color: #0f172a !important;
+}
+
+.light-theme .text-slate-200 {
+  color: #1e293b !important;
+}
+
+.light-theme .text-slate-300 {
+  color: #334155 !important;
+}
+
+.light-theme .text-slate-400 {
+  color: #475569 !important;
+}
+
+.light-theme .text-slate-500 {
+  color: #64748b !important;
+}
+
+.light-theme .text-purple-300 {
+  color: #5b21b6 !important;
+}
+
+.light-theme .text-purple-400 {
+  color: #7c3aed !important;
+}
+
+.light-theme .text-cyan-400 {
+  color: #0891b2 !important;
+}
+
+.light-theme .text-yellow-300 {
+  color: #d97706 !important; /* amber-600 */
+}
+
+/* Inputs, buttons, and settings nodes */
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Dark grey nested inner containers & inputs background overrides */
+.light-theme .bg-slate-900,
+.light-theme .bg-slate-900\/50,
+.light-theme .bg-slate-900\/60,
+.light-theme .bg-slate-900\/80,
+.light-theme .bg-slate-950,
+.light-theme .bg-slate-950\/60,
+.light-theme .bg-slate-950\/70,
+.light-theme .bg-slate-950\/80,
+.light-theme .bg-\[\#0b0021\],
+.light-theme .bg-\[\#0b051e\],
+.light-theme .bg-\[\#04000e\],
+.light-theme .bg-\[\#04000f\],
+.light-theme .bg-\[\#080216\],
+.light-theme .bg-\[\#0d0720\]\/90,
+.light-theme .bg-\[\#0d0725\],
+.light-theme .bg-\[\#120136\],
+.light-theme .bg-\[\#080218\],
+.light-theme .bg-black\/30 {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+  color: #334155 !important;
+}
+
+/* Chat bubble overrides */
+.light-theme .from-\[\#2c056d\] {
+  background-image: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+  border-color: #4338ca !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.15) !important;
+}
+
+.light-theme .from-\[\#2c056d\] p {
+  color: #ffffff !important;
+}
+
+.light-theme .from-\[\#2c056d\] .text-purple-300,
+.light-theme .from-\[\#2c056d\] .text-slate-500 {
+  color: #e0e7ff !important;
+}
+
+.light-theme .glass-panel p {
+  color: #1e293b !important;
+}
+
+/* Scrollbar overrides for premium Light look */
+.light-theme ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
+}
+
+/* Interactive elements & triggers overrides */
+.light-theme .gradient-btn-cyan-purple,
+.light-theme .from-cyan-500\/20,
+.light-theme .from-cyan-500\/30 {
+  background: linear-gradient(135deg, #e0f2fe 0%, #fae8ff 100%) !important;
+  border-color: rgba(148, 163, 184, 0.25) !important;
+  color: #1e293b !important;
+}
+
+.light-theme .text-cyan-200 {
+  color: #4f46e5 !important;
+}
+
+/* Disable dark celestial grid mask visibility */
+.light-theme .fixed.inset-0 .opacity-40 {
+  opacity: 0.15 !important;
+}
